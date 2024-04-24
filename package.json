@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@formkit/tempo": "^0.1.1",
+    "dotenv": "^16.4.5",
     "microcms-js-sdk": "^3.1.1",
     "sitemap": "^7.1.1"
   }
