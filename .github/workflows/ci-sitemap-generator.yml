@@ -1,0 +1,43 @@
+name: Sitemap Generator
+
+on:
+  repository_dispatch:
+    types: [generate-sitemap]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.8.0]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate sitemap
+        run: npm run generate-sitemap # sitemapを生成するスクリプトを実行します
+        env:
+          NODE_ENV: production
+          MICROCMS_API_KEY: ${{ secrets.MICROCMS_API_KEY }}
+          MICROCMS_SERVER_DOMAIN: ${{ secrets.MICROCMS_SERVER_DOMAIN }}
+          MY_HOST_NAME: ${{ secrets.MY_HOST_NAME }}
+
+      - name: Commit and push
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git commit -m "Update sitemap.xml" -a || echo "No changes to commit"
+          git push
